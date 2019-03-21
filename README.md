@@ -1,7 +1,7 @@
-# Jupyter Notebook Converter 
+# Orion-Script-Converter 
 
 
-### A python package to convert Jupyter Notebook ".ipynb" files into regular python ".py" files
+### A python package to convert  files into 
 
 Except converting file format, 
 it will also create 'requirements.txt' and 'params.json' files. 
@@ -31,7 +31,7 @@ Simple and easy to run, like usual pip package installation.
     **Note:** For the second command, 'pip3 install git+https: ...', 
     you may need to change it as 'pip install git+https: ...' depending on your pip command.
     
-- After this package installed, you can use 'convert2py filename1.ipynb, filename2.ipynb, ...' 
+- After this package installed, you can use 'convert2py filename1.ipynb, filename2.ipynb, ...'  
 to convert multiple '.ipynb' files into its corresponding '.py' files.
  
     **Note:** The first argument, 'filename1.ipynb' is required and executable. It is the entry-point of your project.
