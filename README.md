@@ -20,7 +20,7 @@ Simple and easy to run, like usual pip package installation.
 
 ```
     $ cd workspace
-    $ pip3 install git+https://github.com/nebulaai/jupyter-converter.git@0.0.1
+    $ pip3 install git+https://github.com/nebulaai/orion-script-converter/.git
     $ convert2py <filename1.ipynb, [filename.ipynb ...]>
 
 ```
