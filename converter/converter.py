@@ -169,7 +169,6 @@ def convert2or():
     try:
         workspace_dir, exec_file_name, data_uri, data_path, output_path = get_params()
         entry_filename = os.path.basename(exec_file_name)
-        print("entry_filename: ", entry_filename)
     except Exception as e:
         print('Invalid arguments, {}'.format(e))
         sys.exit(1)
