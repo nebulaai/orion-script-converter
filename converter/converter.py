@@ -5,6 +5,7 @@ import json
 import zipfile
 import sys
 import os
+import re
 
 
 def zip_folder(folder_path, output_path):
@@ -41,90 +42,191 @@ def zip_folder(folder_path, output_path):
         zf.close()
 
 
-def get_args():
+def get_args_convert2py():
     try:
-        parser = argparse.ArgumentParser(description='Convert files from Jupyter Notebook to python format.')
-        parser.add_argument("files", nargs='+',
-                            help="List files to be converted. The first arg is entry point(required).")
+        parser = argparse.ArgumentParser(description="Convert Jupyter Notebook '.ipynb' files to python3 '.py' files")
+        parser.add_argument("file", nargs='+', help="List one or more '.ipynb' files to be converted.")
         args = parser.parse_args()
         return args
     except Exception as e:
-        raise RuntimeError('Parsing converter arguments failed. {} '.format(e))
+        raise RuntimeError('Parsing converting arguments failed. {} '.format(e))
+
+
+def check_dir_path(theme, desc, loop, workspace_dir=None):
+    for s in range(loop):
+        dir_path = input(desc)
+        if dir_path == "":
+            dir_path = os.curdir
+        if not os.path.isabs(dir_path):
+            dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
+            print("Not abs path: ", dir_path)
+        else:
+            print("Abs path: ", dir_path)
+
+        if workspace_dir is not None:
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+
+            if dir_path.startswith(os.path.abspath(workspace_dir) + os.sep):
+                return dir_path
+            else:
+                print("Invalid {}, it is outside your project. please try again. ".format(theme))
+        else:
+            if os.path.isdir(dir_path):
+                return dir_path
+            else:
+                print("Invalid {}, please try again. ".format(theme))
+    else:
+        sys.exit("Invalid {}, system exits.".format(theme))
+
+
+def check_file_path(theme, desc, loop, workspace_dir):
+    for s in range(loop):
+        file_path = input(desc)
+        if os.path.isfile(file_path):
+            if not os.path.isabs(file_path):
+                print("os.curdir", os.curdir)
+                file_path = os.path.join(os.path.abspath(os.curdir), file_path)
+                print("Not abs path: ", file_path)
+            else:
+                print("Abs path: ", file_path)
+                print("file_path: ", file_path)
+            if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
+                return file_path
+            else:
+                print("Invalid entry-point file path, file is outside of your project.")
+        else:
+            print("Invalid {} path, please try again.".format(theme))
+    else:
+        sys.exit("Invalid {] path, system exits.".format(theme))
 
 
 def get_params():
-    data_uri = input("(Optional) Enter data uri (Press 'Enter' for none): " or '')
-    data_path = input("(Optional) Enter data path for downloaded data(Press 'Enter' for none): " or '')
-    output_path = input("(Optional) Enter path for output results(Press 'Enter' for none): " or '')
-    return data_path, data_uri, output_path
+    # check workspace path
+    description1_pro = "(Required) Project path: \n\t(Press 'Enter' or '.' for the current directory, " \
+                  "'..' for the parent directory of the current folder): "
+    topic1_pro = "project path"
+    workspace_path = check_dir_path(topic1_pro, description1_pro, 3)
+
+    # check executable file path
+    description_fp = "(Required) Entry-point file path(executable file path): "
+    topic_fp = "entry-point file"
+    exec_file_path = check_file_path(topic_fp, description_fp, 3, workspace_path)
+
+    # check url format
+    has_data_uri = input("Data configuration: \n\t"
+                         "Do you have external data(data stored outside your project database)\n\t"
+                         "that needs to be downloaded from a specific uri (y/n)? ")
+    if has_data_uri.lower().startswith("y"):
+        regex = re.compile(
+            r'^(?:http|ftp)s?://'
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        for i in range(3):
+            data_uri = input("\n\tExternal data uri: ")
+            if re.match(regex, data_uri):
+                # check data_path
+                description_dp = "\n\tPath to save the downloaded data within your project: "
+                topic_dp = "external data saving path"
+                data_saving_path = check_dir_path(topic_dp, description_dp, 3, workspace_path)
+                break
+            else:
+                print("Invalid data uri, please try again. \n\t", exec_file_path)
+        else:
+            sys.exit("Invalid data uri, system exits.")
+
+    else:
+        data_uri = ""
+        data_saving_path = ""
+
+    # check output_path
+    description_out = "\nPath for the task results(project output directory): "
+    topic_out = "output path"
+    output_path = check_dir_path(topic_out, description_out, 3, workspace_path)
+    return workspace_path, exec_file_path, data_uri, data_saving_path, output_path
 
 
-def main():
+def convert2py():
+    """
+    Convert Jupyter Notebook '.ipynb' files to python3 '.py' files.
+    """
 
     # parse converter arguments
-    args = get_args()
-    entry_filename = os.path.splitext(args.files[0])[0]
-    entry_filename_dir = os.path.dirname(os.path.abspath(args.files[0]))
-
-    # input data parameters
+    args = get_args_convert2py()
     try:
-        data_path, data_uri, output_path = get_params()
-    except Exception as e:
-        print('Arguments error, {}'.format(e))
-        sys.exit(1)
-
-    # Convert Jupyter Notebook files to python3 files
-    try:
-        # print(sys.argv, len(sys.argv))
+        p = list()
         for i in range(len(sys.argv) - 1):
-            p = subprocess.Popen(["jupyter", "nbconvert", "--to", "python", args.files[i]])
-            p.wait()
-
-        print('Converted Jupyter Notebook files to python files successfully!')
+            p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", args.file[i]]))
+            p[i].wait()
+        print('Converted files successfully!')
 
     except Exception as e:
-        raise RuntimeError('Converting Jupyter Notebook files to python files failed: {}'.format(e))
+        raise RuntimeError("Converting files failed: {}".format(e))
+
+
+def convert2or():
+    """
+        Wrap and convert python3 '.py' files into a '.zip' file that can be uploaded
+        to Orion platform as a Nebula AI task.
+    """
+    # parse converter arguments
+    try:
+        workspace_dir, exec_file_name, data_uri, data_path, output_path = get_params()
+        entry_filename = os.path.basename(exec_file_name)
+        print("entry_filename: ", entry_filename)
+    except Exception as e:
+        print('Invalid arguments, {}'.format(e))
+        sys.exit(1)
 
     else:
         # Generate requirements.txt
         try:
             import pipreqs
-            print('pipreqs is present!')
         except ImportError as e:
-            raise RuntimeError('package installing failed: {}'.format(e))
+            raise RuntimeError('Package installation failed: {}'.format(e))
 
         else:
             time.sleep(1)
             try:
-                p2 = subprocess.Popen(["pipreqs", "--force", entry_filename_dir])
-                print('Generated requirements.txt successfully!')
+                p2 = subprocess.Popen(["pipreqs", "--force", workspace_dir])
+                print("Generated 'requirements.txt' successfully!")
                 p2.wait()
             except Exception as e:
-                raise RuntimeError('Generating requirements.txt failed: {}'.format(e))
+                raise RuntimeError("Generating 'requirements.txt' failed: {}".format(e))
 
             else:
                 # Generate params.json
                 try:
-                    params_json = json.dumps({"exec_file_name": entry_filename + ".py",
-                                              "data_uri": data_uri,
-                                              "data_path": data_path,
-                                              "output_path": output_path
+                    params_json = json.dumps({"exec_file_name": os.path.relpath(exec_file_name, start=workspace_dir),
+                                              "data_uri": os.path.relpath(data_uri, start=workspace_dir),
+                                              "data_path": os.path.relpath(data_path, start=workspace_dir),
+                                              "output_path": os.path.relpath(output_path, start=workspace_dir)
                                               })
-                    with open(os.path.join(entry_filename_dir, "params.json"), 'w+') as f:
+                    with open(os.path.join(workspace_dir, "params.json"), 'w+') as f:
                         f.write(params_json)
-                    print('Generated params.json successfully!')
+                    print("Generated 'params.json' successfully!")
 
                 except Exception as e:
-                    raise IOError('Creating params.json failed: {}'.format(e))
+                    raise IOError("Generating 'params.json' failed: {}".format(e))
 
                 else:
                     time.sleep(2)
                     try:
-                        zip_folder_name = os.path.join(entry_filename_dir, os.pardir, "task_files")
-                        print(zip_folder_name)
-                        if not os.path.exists(zip_folder_name):
-                            os.makedirs(zip_folder_name)
-                        zip_folder(entry_filename_dir, os.path.join(zip_folder_name, entry_filename + "_orion.zip"))
-                        print('zipped files successfully!')
+                        zip_folder_path = os.path.join(workspace_dir, os.pardir, "task_files")
+                        if not os.path.exists(zip_folder_path):
+                            os.makedirs(zip_folder_path)
+
+                        output_filename = str(entry_filename) + "_orion.zip"
+                        zip_folder(workspace_dir, os.path.join(zip_folder_path, output_filename))
+                        print('Zipped files successfully!')
                     except Exception as e:
-                        raise RuntimeError('zipping files failed: {}'.format(e))
+                        raise RuntimeError('Zipping files failed: {}'.format(e))
+                    else:
+                        try:
+                            os.remove(os.path.join(workspace_dir, "params.json"))
+                            os.remove(os.path.join(workspace_dir, "requirements.txt"))
+                        except Exception as e:
+                            raise RuntimeError('Removing files failed: {}'.format(e))
