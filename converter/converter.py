@@ -59,9 +59,6 @@ def check_dir_path(theme, desc, loop, workspace_dir=None):
             dir_path = os.curdir
         if not os.path.isabs(dir_path):
             dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
-            print("Not abs path: ", dir_path)
-        else:
-            print("Abs path: ", dir_path)
 
         if workspace_dir is not None:
             if not os.path.exists(dir_path):
@@ -85,12 +82,8 @@ def check_file_path(theme, desc, loop, workspace_dir):
         file_path = input(desc)
         if os.path.isfile(file_path):
             if not os.path.isabs(file_path):
-                print("os.curdir", os.curdir)
                 file_path = os.path.join(os.path.abspath(os.curdir), file_path)
-                print("Not abs path: ", file_path)
-            else:
-                print("Abs path: ", file_path)
-                print("file_path: ", file_path)
+
             if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
                 return file_path
             else:
