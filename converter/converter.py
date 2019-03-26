@@ -62,40 +62,6 @@ def get_args_convert2or():
         raise RuntimeError('Parsing converting arguments failed. {} '.format(e))
 
 
-# def get_params():
-#
-#     workspace_dir = input("Project path:\n\t"
-#                           "('Enter' or '.' for the current directory, "
-#                           " '..' for the parent directory of the current folder): ")
-#     if not workspace_dir.strip().startswith("/"):
-#         workspace_dir = os.path.join(os.getcwd(), workspace_dir)
-#
-#     for i in range(3):
-#         exec_file_name = input("(Required) Enter the entry-point file path (executable file): ")
-#         if exec_file_name:
-#             exec_file_name = os.path.commonpath([os.path.abspath(workspace_dir), os.path.abspath(exec_file_name)])
-#             break
-#         else:
-#             print("Invalid input, please try again. (Required)")
-#     else:
-#         sys.exit("Invalid input, system exits.")
-#
-#     has_data_uri = input("Data configuration: \n\t"
-#                          "do you have source data that needs to be downloaded "
-#                          "from a specific uri but not defined in your program (y/n)? ")
-#     if has_data_uri.lower().startswith("y"):
-#         data_uri = input("\n\tSource data uri: ")
-#         data_path = input("\n\tPath to save the downloaded data within your project: ")
-#         data_path = os.path.commonpath([os.path.abspath(workspace_dir), os.path.abspath(data_path)])
-#     else:
-#         data_uri = ''
-#         data_path = ''
-#
-#     output_path = input("\nPath for the task results(project output directory): " or '')
-#     output_path = os.path.commonpath([os.path.abspath(workspace_dir), os.path.abspath(output_path)])
-#     return workspace_dir, exec_file_name, data_path, data_uri, output_path
-
-
 def check_dir_path(theme, desc, loop, workspace_dir=None):
     for i in range(loop):
         dir_path = input(desc)
@@ -132,62 +98,6 @@ def check_dir_path(theme, desc, loop, workspace_dir=None):
         sys.exit("Invalid {}, system exits.".format(theme))
 
 
-
-
-
-
-        #     else:
-        #         if not os.path.exists(dir_path):
-        #             os.makedirs(dir_path)
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        # if not os.path.isabs(dir_path):
-        #     dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
-        #     print("Not abs path: ", dir_path)
-        # else:
-        #     print("Abs path: ", dir_path)
-
-
-
-
-
-        # if dir_path == "":
-        #     dir_path = os.curdir
-        # if not os.path.isabs(dir_path):
-        #     dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
-        #     print("Not abs path: ", dir_path)
-        # else:
-        #     print("Abs path: ", dir_path)
-
-    #     if workspace_dir is not None:
-    #         # if not os.path.exists(dir_path):
-    #         #     os.makedirs(dir_path)
-    #
-    #         # if dir_path.startswith(os.path.abspath(workspace_dir) + os.sep):
-    #         #     return dir_path
-    #         # else:
-    #         #     print("Invalid {}, it is outside your project. please try again. ".format(theme))
-    #     else:
-    #         if os.path.isdir(dir_path):
-    #             return dir_path
-    #         else:
-    #             print("Invalid {}, please try again. ".format(theme))
-    # else:
-    #     sys.exit("Invalid {}, system exits.".format(theme))
-
-
 def check_file_path(theme, desc, loop, workspace_dir):
     for i in range(loop):
         file_path = input(desc)
@@ -198,7 +108,6 @@ def check_file_path(theme, desc, loop, workspace_dir):
                 print("Not abs path: ", file_path)
             else:
                 print("Abs path: ", file_path)
-                # rel_file_path = os.path.relpath(file_path, start=workspace_dir)
                 print("file_path: ", file_path)
             if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
                 return file_path
@@ -242,7 +151,6 @@ def get_params():
                 topic_dp = "external data saving path"
                 data_saving_path = check_dir_path(topic_dp, description_dp, 3, workspace_path)
                 break
-                # return data_uri, data_saving_path
             else:
                 print("Invalid data uri, please try again. \n\t", exec_file_path)
         else:
@@ -251,7 +159,6 @@ def get_params():
     else:
         data_uri = ""
         data_saving_path = ""
-        # return data_uri, data_saving_path
 
     # check output_path
     description_out = "\nPath for the task results(project output directory): "
@@ -287,14 +194,11 @@ def convert2or():
     """
     # parse converter arguments
     args = get_args_convert2or()
-    # entry_filename = os.path.splitext(args.file[0])[0]
-    # workspace_dir = os.path.dirname(os.path.abspath(args.file[0]))
 
     # input data parameters
     try:
         workspace_dir, exec_file_name, data_uri, data_path, output_path = get_params()
         entry_filename = os.path.splitext(os.path.basename(exec_file_name))[0]
-        # entry_filename = os.path.splitext(exec_file_name)[0]
         print("entry_filename: ", entry_filename)
     except Exception as e:
         print('Invalid arguments, {}'.format(e))
@@ -341,12 +245,6 @@ def convert2or():
                     time.sleep(2)
                     try:
                         zip_folder_path = os.path.join(workspace_dir, os.pardir, "task_files")
-                        # print(zip_folder_path)
-                        # if not os.path.exists(data_path):
-                        #     os.makedirs(data_path)
-                        #
-                        # if not os.path.exists(output_path):
-                        #     os.makedirs(output_path)
 
                         if not os.path.exists(zip_folder_path):
                             os.makedirs(zip_folder_path)
