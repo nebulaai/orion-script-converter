@@ -207,9 +207,9 @@ def convert2or():
 
                 # fix bug raising from 'tensorflow' and 'tensorflow-gpu'
                 with open(os.path.join(workspace_dir, 'requirements.txt'), 'w+') as fp:
-                    line = fp.readline()
-                    if "tensorflow==" in line:
-                        line.replace("tensorflow==", "tensorflow-gpu==")
+                    for line in fp.readline():
+                        if "tensorflow==" in line:
+                            line.replace("tensorflow==", "tensorflow-gpu==")
 
             except Exception as e:
                 raise RuntimeError("Generating 'requirements.txt' failed: {}".format(e))
