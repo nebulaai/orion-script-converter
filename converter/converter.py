@@ -20,21 +20,11 @@ def zip_folder(folder_path, output_path):
                     if ".ipynb" not in path:
                         zf.write(path, os.path.relpath(path, base_path))
                 for name in filenames:
-
                     path = os.path.normpath(os.path.join(dirpath, name))
                     if os.path.isfile(path):
                         filename, file_extension = os.path.splitext(name)
                         if str(file_extension) != ".ipynb":
                             zf.write(path, os.path.relpath(path, base_path))
-    except IOError as message:
-        print(message)
-        sys.exit(1)
-    except OSError as message:
-        print(message)
-        sys.exit(1)
-    except zipfile.BadZipfile as message:
-        print(message)
-        sys.exit(1)
     except Exception as message:
         print(message)
         sys.exit(1)
@@ -54,8 +44,9 @@ def get_args_convert2py():
 
 def get_args_convert2or():
     try:
-        parser = argparse.ArgumentParser(description="Wrap and convert python3 '.py' files into an Orion AI task")
-        parser.add_argument("file", nargs='*')
+        parser = argparse.ArgumentParser(description="Wrap and convert python3 '.py' files into an '.zip' file"
+                                                     "that can be uploaded as a task by NebulaAI Orion platform")
+        # parser.add_argument("file", nargs='*')
         args = parser.parse_args()
         return args
     except Exception as e:
@@ -71,19 +62,21 @@ def check_dir_path(theme, desc, loop, workspace_dir=None):
         elif "output path" in theme:
             if dir_path == "":
                 res = input("Warning: output path is empty, no files will be output."
-                            " Please confirm('y' or the new output path): ")
+                            " Please confirm('y' for empty output path, or the new output path): ")
                 if not res.lower().startswith("y"):
                     dir_path = res
 
         if not os.path.isabs(dir_path):
             dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
-            print("Rel path: ", dir_path)
-        else:
-            print("Abs path: ", dir_path)
 
         if "project path" not in theme:
-            if not os.path.exists(dir_path):
+            # if not os.path.exists(dir_path):
+            #     os.makedirs(dir_path)
+            try:
                 os.makedirs(dir_path)
+            except FileExistsError:
+                pass
+
             if dir_path.startswith(os.path.abspath(workspace_dir) + os.sep):
                 return dir_path
             else:
@@ -103,12 +96,8 @@ def check_file_path(theme, desc, loop, workspace_dir):
         file_path = input(desc)
         if os.path.isfile(file_path):
             if not os.path.isabs(file_path):
-                print("os.curdir", os.curdir)
                 file_path = os.path.join(os.path.abspath(os.curdir), file_path)
-                print("Not abs path: ", file_path)
-            else:
-                print("Abs path: ", file_path)
-                print("file_path: ", file_path)
+
             if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
                 return file_path
             else:
@@ -131,7 +120,7 @@ def get_params():
     topic_fp = "entry-point file"
     exec_file_path = check_file_path(topic_fp, description_fp, 3, workspace_path)
 
-    # check url format
+    # check external data url format
     has_data_uri = input("Data configuration: \n\t"
                          "Do you have external data(data stored outside your project database)\n\t"
                          "that needs to be downloaded from a specific uri (y/n)? ")
@@ -146,7 +135,7 @@ def get_params():
         for i in range(3):
             data_uri = input("\n\tExternal data uri: ")
             if re.match(regex, data_uri):
-                # check data_path
+                # check external data_path
                 description_dp = "\n\tPath to save the downloaded data within your project: "
                 topic_dp = "external data saving path"
                 data_saving_path = check_dir_path(topic_dp, description_dp, 3, workspace_path)
@@ -176,7 +165,6 @@ def convert2py():
     # parse converter arguments
     args = get_args_convert2py()
     try:
-        # print(sys.argv, len(sys.argv))
         p = list()
         for i in range(len(sys.argv) - 1):
             p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", args.file[i]]))
@@ -199,7 +187,6 @@ def convert2or():
     try:
         workspace_dir, exec_file_name, data_uri, data_path, output_path = get_params()
         entry_filename = os.path.splitext(os.path.basename(exec_file_name))[0]
-        print("entry_filename: ", entry_filename)
     except Exception as e:
         print('Invalid arguments, {}'.format(e))
         sys.exit(1)
@@ -208,7 +195,6 @@ def convert2or():
         # Generate requirements.txt
         try:
             import pipreqs
-            print('pipreqs is present!')
         except ImportError as e:
             raise RuntimeError('Package installation failed: {}'.format(e))
 
@@ -224,8 +210,6 @@ def convert2or():
             else:
                 # Generate params.json
                 try:
-                    # print("data_path: ", os.path.relpath(data_path, start=workspace_dir))
-
                     exec_file_name_v = os.path.relpath(exec_file_name, start=workspace_dir)
                     data_path_v = "" if data_path == "" else os.path.relpath(data_path, start=workspace_dir)
                     output_path_v = "" if output_path == "" else os.path.relpath(output_path, start=workspace_dir)
