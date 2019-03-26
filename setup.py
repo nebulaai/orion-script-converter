@@ -5,7 +5,7 @@ setup(
     name='convert2orion',
     url='https://github.com/nebulaai/orion-script-converter',
     author='Eric Pang',
-    packages=['convert2orion'],
+    packages=['convert'],
     version='0.0.1',
     license='MIT',
     description='An python package for converting Jupyter Notebook ".ipynb" files into python 3 ".py" files'
