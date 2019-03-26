@@ -201,9 +201,16 @@ def convert2or():
         else:
             time.sleep(1)
             try:
-                p2 = subprocess.Popen(["pipreqs", "--force", workspace_dir])
+                p = subprocess.Popen(["pipreqs", "--force", workspace_dir])
+                p.wait()
                 print("Generated 'requirements.txt' successfully!")
-                p2.wait()
+
+                # fix bug raising from 'tensorflow' and 'tensorflow-gpu'
+                with open(os.path.join(workspace_dir, 'requirements.txt'), 'w+') as fp:
+                    line = fp.readline()
+                    if "tensorflow==" in line:
+                        line.replace("tensorflow==", "tensorflow-gpu==")
+
             except Exception as e:
                 raise RuntimeError("Generating 'requirements.txt' failed: {}".format(e))
 

@@ -5,7 +5,7 @@
 
 Except converting file format, 
 it will also create 'requirements.txt' and 'params.json' files. 
-Then, it will zip all the files within your workspace to the folder 'taskFiles'
+Then, it will zip all the files within your workspace to the folder 'task_files'
 which can be uploaded directly to Orion platform.
 
 ### Requirements
