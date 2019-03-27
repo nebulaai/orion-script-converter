@@ -32,12 +32,25 @@ def zip_folder(folder_path, output_path):
         zf.close()
 
 
-def rw_file(filename, **kwargs):
-    for k, v in kwargs.items():
+def rw_file(filename, arg):
+    replace_words = ["tensorflow==", "tensorflow_gpu=="]
+    for replace_word in replace_words:
         with open(filename, "r+") as fp:
-            lines = [line.replace(line[:], kwargs[k]+"==1.12.0\n")
-                     if k + "==" in line else line
-                     for line in fp]
+            lines = [line.replace(line[:], arg+"\n") if replace_word in line else line for line in fp]
+            tf_gpu = "tensorflow-gpu=="
+            for li in lines:
+                try:
+                    if tf_gpu in li:
+                        ver = li.split("==", 1)[1]
+                        minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
+                        ver = "1." + minor_ver + ".0"
+                        li = tf_gpu + ver + "\n"
+                    else:
+                        li = li
+                except Exception:
+                    ver = "1.12.0"
+                    li = tf_gpu + ver + "\n"
+
             fp.seek(0)
             fp.truncate()
             fp.writelines(lines)
@@ -214,9 +227,9 @@ def convert2or():
                 p.wait()
                 time.sleep(1)
 
-                # fix the bug raising from 'tensorflow' and 'tensorflow-gpu'
+                # fix the bug raising from 'tensorflow', 'tensorflow_gpu' and "tensorflow-gpu>1.12.0"
                 filename = os.path.join(workspace_dir, "requirements.txt")
-                rw_file(filename, tensorflow="tensorflow-gpu", tensorflow_gpu="tensorflow-gpu")
+                rw_file(filename, "tensorflow-gpu==1.12.0")
                 print("Generated 'requirements.txt' successfully!")
 
             except Exception as e:
