@@ -35,7 +35,7 @@ def zip_folder(folder_path, output_path):
 def rw_file(filename, **kwargs):
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            lines = [line.replace(k, k+"-gpu".format(kwargs[k]))
+            lines = [line.replace(line[:], kwargs[k]+"==1.12.0")
                      if k + "==" in line else line
                      for line in fp]
             fp.seek(0)
@@ -216,8 +216,7 @@ def convert2or():
 
                 # fix the bug raising from 'tensorflow' and 'tensorflow-gpu'
                 filename = os.path.join(workspace_dir, "requirements.txt")
-                rw_file(filename, tensorflow="tensorflow-gpu")
-
+                rw_file(filename, tensorflow="tensorflow-gpu", tensorflow_gpu="tensorflow-gpu")
                 print("Generated 'requirements.txt' successfully!")
 
             except Exception as e:
