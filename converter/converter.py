@@ -36,7 +36,7 @@ def rw_file(filename, **kwargs):
     # replace_words = ["tensorflow"]
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            lines = [line.replace(k, k + "-gpu".format(kwargs[k]))
+            lines = [line.replace(k, k+"-gpu".format(kwargs[k]))
                      if k + "==" in line else line
                      for line in fp]
             fp.seek(0)
