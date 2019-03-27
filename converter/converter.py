@@ -33,7 +33,7 @@ def zip_folder(folder_path, output_path):
 
 
 def rw_file(filename, arg):
-    replace_words = ["tensorflow==", "tensorflow_gpu=="]
+    replace_words = ["tensorflow=="]
     for replace_word in replace_words:
         with open(filename, "r+") as fp:
             lines = [line.replace(line[:], arg+"\n") if replace_word in line else line for line in fp]
