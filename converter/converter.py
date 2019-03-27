@@ -35,7 +35,7 @@ def zip_folder(folder_path, output_path):
 def rw_file(filename, **kwargs):
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            lines = [line.replace(line[:], kwargs[k]+"==1.12.0")
+            lines = [line.replace(line[:], kwargs[k]+"==1.12.0\n")
                      if k + "==" in line else line
                      for line in fp]
             fp.seek(0)
