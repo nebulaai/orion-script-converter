@@ -33,7 +33,6 @@ def zip_folder(folder_path, output_path):
 
 
 def rw_file(filename, **kwargs):
-    # replace_words = ["tensorflow"]
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
             lines = [line.replace(k, k+"-gpu".format(kwargs[k]))
@@ -82,8 +81,7 @@ def check_dir_path(theme, desc, loop, workspace_dir=None):
             dir_path = os.path.join(os.path.abspath(os.curdir), dir_path)
 
         if "project path" not in theme:
-            # if not os.path.exists(dir_path):
-            #     os.makedirs(dir_path)
+
             try:
                 os.makedirs(dir_path)
             except FileExistsError:
@@ -165,7 +163,6 @@ def get_params():
     description_out = "\nPath for the task results(project output directory): "
     topic_out = "output path"
     output_path = check_dir_path(topic_out, description_out, 3, workspace_path)
-    print("output_path. ", output_path)
     return workspace_path, exec_file_path, data_uri, data_saving_path, output_path
 
 
@@ -216,6 +213,7 @@ def convert2or():
                 p = subprocess.Popen(["pipreqs", "--force", workspace_dir])
                 p.wait()
                 time.sleep(1)
+
                 # fix the bug raising from 'tensorflow' and 'tensorflow-gpu'
                 filename = os.path.join(workspace_dir, "requirements.txt")
                 rw_file(filename, tensorflow="tensorflow-gpu")
