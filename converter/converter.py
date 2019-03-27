@@ -32,6 +32,18 @@ def zip_folder(folder_path, output_path):
         zf.close()
 
 
+def rw_file(filename, **kwargs):
+    # replace_words = ["tensorflow"]
+    for replace_word, replace_word_v in kwargs:
+        with open(filename, "r+") as fp:
+            lines = [line.replace(line[:], replace_word + "-gpu".format(kwargs[replace_word]))
+                     if replace_word + "==" in line else line
+                     for line in fp]
+            fp.seek(0)
+            fp.truncate()
+            fp.writelines(lines)
+
+
 def get_args_convert2py():
     try:
         parser = argparse.ArgumentParser(description="Convert Jupyter Notebook '.ipynb' files to python3 '.py' files")
@@ -203,13 +215,12 @@ def convert2or():
             try:
                 p = subprocess.Popen(["pipreqs", "--force", workspace_dir])
                 p.wait()
+                time.sleep(1)
+                # fix the bug raising from 'tensorflow' and 'tensorflow-gpu'
+                filename = os.path.join(workspace_dir, "requirements.txt")
+                rw_file(filename, tensorflow="tensorflow-gpu")
+                
                 print("Generated 'requirements.txt' successfully!")
-
-                # fix bug raising from 'tensorflow' and 'tensorflow-gpu'
-                with open(os.path.join(workspace_dir, 'requirements.txt'), 'w+') as fp:
-                    for line in fp.readline():
-                        if "tensorflow==" in line:
-                            line.replace("tensorflow==", "tensorflow-gpu==")
 
             except Exception as e:
                 raise RuntimeError("Generating 'requirements.txt' failed: {}".format(e))
