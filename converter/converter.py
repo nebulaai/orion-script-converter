@@ -34,10 +34,10 @@ def zip_folder(folder_path, output_path):
 
 def rw_file(filename, **kwargs):
     # replace_words = ["tensorflow"]
-    for replace_word, replace_word_v in kwargs.items():
+    for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            lines = [line.replace(line[:], replace_word + "-gpu".format(kwargs[replace_word]))
-                     if replace_word + "==" in line else line
+            lines = [line.replace(k, k + "-gpu".format(kwargs[k]))
+                     if k + "==" in line else line
                      for line in fp]
             fp.seek(0)
             fp.truncate()
