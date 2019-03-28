@@ -32,31 +32,62 @@ def zip_folder(folder_path, output_path):
         zf.close()
 
 
-def rw_file(filename, arg):
-    replace_words = ["tensorflow=="]
-    for replace_word in replace_words:
-        with open(filename, "r+") as fp:
-            lines = [line.replace(line[:], arg+"\n") if replace_word in line else line for line in fp]
-            tf_gpu = "tensorflow-gpu=="
-            for li in lines:
-                try:
-                    if tf_gpu in li:
-                        ver = li.split("==", 1)[1]
-                        minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
-                        ver = "1." + minor_ver + ".0"
-                        li = tf_gpu + ver + "\n"
-                    else:
-                        li = li
-                except Exception:
-                    ver = "1.12.0"
-                    li = tf_gpu + ver + "\n"
-            for li in lines:
-                if "matplotlib" in li:
-                    li = "matplotlib\n"
+# def rw_file(filename, arg):
+#     replace_words = ["tensorflow=="]
+#     for replace_word in replace_words:
+#         with open(filename, "r+") as fp:
+#             lines = [line.replace(line[:], arg+"\n") if replace_word in line else line for line in fp]
+#             tf_gpu = "tensorflow-gpu=="
+#             for li in lines:
+#                 try:
+#                     if tf_gpu in li:
+#                         ver = li.split("==", 1)[1]
+#                         minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
+#                         ver = "1." + minor_ver + ".0"
+#                         li = tf_gpu + ver + "\n"
+#                     else:
+#                         li = li
+#                 except Exception:
+#                     ver = "1.12.0"
+#                     li = tf_gpu + ver + "\n"
+#             for li in lines:
+#                 if "matplotlib" in li:
+#                     li = "matplotlib\n"
+#
+#             fp.seek(0)
+#             fp.truncate()
+#             fp.writelines(lines)
+
+
+def rw_file(filename, **kwargs):
+    with open(filename, "r+") as fp:
+        lines = fp.readlines()
+        for line in lines:
+            if "matplotlib==" in line:
+                line = line.replace(line[:], "matplotlib\n")
+            elif "tensorflow_gpu==" in line:
+                line = line.replace(line[:], "\n")
+            elif "tensorflow==" in line:
+                line = line.replace("tensorflow", "tensorflow-gpu")
+
+        for line in lines:
+            tf_ver = "tensorflow-gpu"
+            try:
+                if tf_ver in line:
+                    ver = line.split("==", 1)[1]
+                    minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
+                    ver = "1." + minor_ver + ".0"
+                    seq = [tf_ver, "==", ver, "\n"]
+                    line = "".join(seq)
+
+            except Exception:
+                ver = "1.12.0"
+                line = "".join([tf_ver, ver, "\n"])
 
             fp.seek(0)
             fp.truncate()
             fp.writelines(lines)
+
 
 
 def get_args_convert2py():
@@ -232,7 +263,8 @@ def convert2or():
 
                 # fix the bug raising from 'tensorflow', 'tensorflow_gpu' and "tensorflow-gpu>1.12.0"
                 filename = os.path.join(workspace_dir, "requirements.txt")
-                rw_file(filename, "tensorflow-gpu==1.12.0")
+
+                rw_file(filename, tensorflow="tensorflow-gpu", tensorflow_gpu="", matplotlib="")
                 print("Generated 'requirements.txt' successfully!")
 
             except Exception as e:
