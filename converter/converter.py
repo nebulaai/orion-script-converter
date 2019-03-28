@@ -36,6 +36,9 @@ def rw_file(filename, **kwargs):
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
             lines = [line.replace(line[:], "".join([v, "\n"])) if k in line else line for line in fp]
+        fp.seek(0)
+        fp.truncate()
+        fp.writelines(lines)
 
     tf_gpu = "tensorflow-gpu=="
     with open(filename, "r+") as fp:
