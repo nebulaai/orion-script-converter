@@ -70,11 +70,11 @@ def rw_file(filename, **kwargs):
             if "tensorflow==" in line:
                 line = line.replace("tensorflow", "tensorflow-gpu")
 
-        for line in lines:
+        for li in lines:
             tf_ver = "tensorflow-gpu"
             try:
-                if tf_ver in line:
-                    ver = line.split("==", 1)[1]
+                if tf_ver in li:
+                    ver = li.strip().split("==", 1)[1]
                     minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
                     ver = "1." + minor_ver + ".0"
                     seq = [tf_ver, "==", ver, "\n"]
