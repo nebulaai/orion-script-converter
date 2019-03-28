@@ -44,7 +44,7 @@ def remove_empty_lines(filename):
 def rw_file(filename, **kwargs):
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            if "tensorflow" in k:
+            if "tensorflow==" in k:
                 lines = [line.replace(k, v) if k in line else line for line in fp]
             else:
                 lines = [line.replace(line[:], "".join([v, "\n"])) if k in line else line for line in fp]
