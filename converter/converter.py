@@ -65,9 +65,9 @@ def rw_file(filename, **kwargs):
         for line in lines:
             if "matplotlib==" in line:
                 line = line.replace(line[:], "matplotlib\n")
-            elif "tensorflow_gpu==" in line:
-                line = line.replace(line[:], "\n")
-            elif "tensorflow==" in line:
+            if "tensorflow_gpu==" in line:
+                line = line.replace(line[:], "")
+            if "tensorflow==" in line:
                 line = line.replace("tensorflow", "tensorflow-gpu")
 
         for line in lines:
