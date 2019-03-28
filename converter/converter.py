@@ -53,7 +53,7 @@ def rw_file(filename, **kwargs):
             fp.truncate()
             fp.writelines(lines)
 
-    tf_gpu = "tensorflow-gpu=="
+    tf_gpu = "tensorflow-gpu"
     with open(filename, "r+") as fp:
         lines = fp.readlines()
         for li in lines:
