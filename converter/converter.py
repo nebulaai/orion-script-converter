@@ -62,12 +62,12 @@ def rw_file(filename, **kwargs):
                     ver = li.split("==", 1)[1]
                     minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
                     ver = "1." + minor_ver + ".0"
-                    li = tf_gpu + ver + "\n"
+                    li = "".join([tf_gpu, "==", ver, "\n"])
                 else:
                     li = li
             except Exception:
                 ver = "1.12.0"
-                li = tf_gpu + ver + "\n"
+                li = "".join([tf_gpu, "==", ver, "\n"])
 
             fp.seek(0)
             fp.truncate()
