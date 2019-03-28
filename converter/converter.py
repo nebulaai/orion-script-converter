@@ -51,6 +51,9 @@ def rw_file(filename, arg):
                     ver = "1.12.0"
                     li = tf_gpu + ver + "\n"
 
+                if "matplotlib" in li:
+                    li = "matplotlib\n"
+
             fp.seek(0)
             fp.truncate()
             fp.writelines(lines)
