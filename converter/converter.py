@@ -50,7 +50,7 @@ def rw_file(filename, arg):
                 except Exception:
                     ver = "1.12.0"
                     li = tf_gpu + ver + "\n"
-
+            for li in lines:
                 if "matplotlib" in li:
                     li = "matplotlib\n"
 
