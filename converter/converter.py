@@ -44,30 +44,11 @@ def remove_empty_lines(filename):
 def rw_file(filename, **kwargs):
     for k, v in kwargs.items():
         with open(filename, "r+") as fp:
-            if "tensorflow==" in k.lower():
-                lines = [line.replace(k, v) if k in line else line.lower() for line in fp]
-            else:
-                lines = [line.replace(line[:], "".join([v, "\n"])) if k in line.lower() else line for line in fp]
-
-            fp.seek(0)
-            fp.truncate()
-            fp.writelines(lines)
-
-    tf_gpu = "tensorflow-gpu"
-    with open(filename, "r+") as fp:
-        lines = fp.readlines()
-        for li in lines:
-            try:
-                if tf_gpu in li:
-                    ver = li.split("==", 1)[1]
-                    minor_ver = "12" if int(ver.split(".")[1]) > 8 else "8"
-                    ver = "1." + minor_ver + ".0"
-                    li = "".join([tf_gpu, "==", ver, "\n"])
-                else:
-                    li = li
-            except Exception:
-                ver = "1.12.0"
-                li = "".join([tf_gpu, "==", ver, "\n"])
+            # if "tensorflow==" in k.lower():
+            #     lines = [line.replace(k, v) if "".join([k, "=="]) in line.lower() else line for line in fp]
+            # else:
+            lines = [line.replace(line[:], "".join([v, "\n"]))
+                         if "".join([k, "=="]) in line.lower() else line for line in fp]
 
             fp.seek(0)
             fp.truncate()
