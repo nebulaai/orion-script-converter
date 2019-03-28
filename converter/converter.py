@@ -57,13 +57,10 @@ def rw_file(filename, **kwargs):
             except Exception:
                 ver = "1.12.0"
                 li = tf_gpu + ver + "\n"
-        for li in lines:
-            if "matplotlib" in li:
-                li = "matplotlib\n"
 
-        fp.seek(0)
-        fp.truncate()
-        fp.writelines(lines)
+            fp.seek(0)
+            fp.truncate()
+            fp.writelines(lines)
 
 
 # def rw_file(filename, **kwargs):
