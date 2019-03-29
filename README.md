@@ -1,4 +1,4 @@
-# Orion-Script-Converter Version: 0.0.1
+# Orion-Script-Converter
 
 
 ### A python package to convert python3 project into a NBAI task that can be executed by Nebula AI Worker.
