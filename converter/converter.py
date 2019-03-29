@@ -54,7 +54,7 @@ def rw_file(filename, **kwargs):
 
 def get_args_convert2py():
     try:
-        parser = argparse.ArgumentParser(description="Convert Jupyter Notebook '.ipynb' files to python3 '.py' files")
+        parser = argparse.ArgumentParser(description="Convert Jupyter Notebook '.ipynb' files to Python3 '.py' files")
         parser.add_argument("file", nargs='+', help="List one or more '.ipynb' files to be converted.")
         args = parser.parse_args()
         return args
@@ -64,8 +64,9 @@ def get_args_convert2py():
 
 def get_args_convert2or():
     try:
-        parser = argparse.ArgumentParser(description="Wrap and convert python3 '.py' files into an '.zip' file"
-                                                     "that can be uploaded as a task by NebulaAI Orion platform")
+        parser = argparse.ArgumentParser(description="Warp and convert Python3 project into a NBAI task that "
+                                                     "can be uploaded directly via NBAI Orion Platform "
+                                                     "and executed by Nebula AI Worker.")
         # parser.add_argument("file", nargs='*')
         args = parser.parse_args()
         return args

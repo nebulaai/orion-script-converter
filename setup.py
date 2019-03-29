@@ -8,7 +8,7 @@ setup(
     packages=['converter'],
     version='0.0.1',
     license='MIT',
-    description='Warp and convert python3 project files into a NBAI task '
+    description='Warp and convert Python3 project into a NBAI task '
                 'that can be uploaded directly via NBAI Orion Platform and executed by Nebula AI Worker.',
     entry_points={
         'console_scripts': [
