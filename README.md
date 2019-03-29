@@ -116,7 +116,7 @@ output response:
             Otherwise, there will be no output files.
             
         5. A NBAI task will be created and saved in the 'task_files' folder 
-        which is a sibling folder of your project. 
+           which is a sibling folder of your project. 
 
         
 - For project in Jupyter Notebook:
