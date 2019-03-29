@@ -123,13 +123,11 @@ output response:
 
     You have two ways to convert your Jupyter Notebook '.ipynb' files into a Python3 '.py' file:
     
-    1.
-    In your Jupyter Notebook, open a '.ipynb' file, select File | Download as | Python, 
+    1. In your Jupyter Notebook workspace, open a '.ipynb' file, select File -> Download as | Python, 
     a '.py' with the same file name will create.
     
-    2. 
-    Use the following command
- ```
+    2. Use the following command
+```
     $ cd my_project   
     my_project$ convert2py <filename1.ipynb, [filename.ipynb ...]>     # for multi-file convertion
 ```
