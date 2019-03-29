@@ -5,10 +5,10 @@
   
 This package includes two commands:
 ```
-- convert2py: Convert Jupyter Notebook '.ipynb' files into python3 '.py' files.
+- convert2or: Warp and convert python3 project files into a NBAI task that can be uploaded
+ directly via NBAI Orion Platform and executed by Nebula AI Worker.
     
-- convert2or: Warp and convert python3 project files into a NBAI task that can be uploaded directly via NBAI Orion Platform
-     and executed by Nebula AI Worker.
+- convert2py: Convert Jupyter Notebook '.ipynb' files into python3 '.py' files.
 
 ```
     
@@ -85,7 +85,8 @@ output response:
 	    (Press 'Enter' or '.' for the current directory, '..' for the parent directory of the current folder): 
         
         Input the Python3 project path, either relative path or absolute path. 
-        'Enter' or '.' represents the current folder(default) and the '..' means the parent folder of the current path.
+        'Enter' or '.' represents the current folder(default) and the '..' means the parent folder 
+        of the current path.
         
         2.
         (Required) entry-point file path(executable file path):
