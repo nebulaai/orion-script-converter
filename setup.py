@@ -8,8 +8,8 @@ setup(
     packages=['converter'],
     version='0.0.1',
     license='MIT',
-    description='An python package to convert Jupyter Notebook ".ipynb" files into python 3 ".py" files'
-                ' and making a task file that can be run on Orion platform.',
+    description='Warp and convert python3 project files into a NBAI task '
+                'that can be uploaded directly via NBAI Orion Platform and executed by Nebula AI Worker.',
     entry_points={
         'console_scripts': [
             'convert2py = converter.converter:convert2py',

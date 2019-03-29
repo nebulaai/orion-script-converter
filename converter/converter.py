@@ -195,7 +195,7 @@ def convert2py():
 
 def convert2or():
     """
-        Wrap and convert python3 '.py' files into an '.zip' file that can be uploaded
+        Wrap and convert python3 '.py' files into an file that can be uploaded
         as a task by NebulaAI Orion platform.
     """
     # parse converter arguments
