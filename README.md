@@ -129,23 +129,24 @@ output response:
     2. Use the following command
 ```
     $ cd my_project   
-    my_project$ convert2py <filename1.ipynb, [filename.ipynb ...]>     # for multi-file convertion
+    my_project$ convert2py <filename1.ipynb, [filename.ipynb ...]>     # for multi-file conversion
 ```
 
 ### Help
 - Get help
 
 `$ convert2py -h`
+`$ convert2or -h`
 
 - Get package information
 
-`$ pip3 show convert2or`
+`$ pip3 show convert2orion`
 
 - Remove this package
 
-`$ pip3 uninstall convert2or`
+`$ pip3 uninstall convert2orion`
 
 ### Samples
-
+to do
 
 
