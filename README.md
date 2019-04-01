@@ -147,6 +147,5 @@ output response:
 `$ pip3 uninstall convert2orion`
 
 ### Samples
-to do
-
+[Tutorial using real AI projects](./convert2orion_samples.md)
 
