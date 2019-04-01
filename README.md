@@ -148,6 +148,4 @@ output response:
 
 ### Samples
 
-
-
-
+[Tutorial using real AI projects](./convert2orion_samples.md)
