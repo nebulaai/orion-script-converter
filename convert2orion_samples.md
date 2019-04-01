@@ -1,18 +1,20 @@
 
-#Samples of converting AI models to Nenula AI tasks 
+# Samples of converting AI models to Nenula AI tasks 
 Created by weigang Li
 
 This tutorial aims to facilitate Nebula AI users to convert their 
 projects into Nebula AI tasks using real examples.
 
 ### How does it work? 
-As a Nebula AI user, only three steps you need to do:
+As Nebula AI User, only three steps you need to do:
 
 1. Convert your AI project into a Nebula AI task(a '.zip' file).
 2. Upload this task via Orion Platform and have it executed by a Nebula AI Worker.
 3. Download the result. 
 
-Before starting conversion, install the 'convert2orion' package:
+
+### Installation 
+Install the 'convert2orion' package:
 
 ```
     $ pip3 install git+https://github.com/nebulaai/orion-script-converter.git  
