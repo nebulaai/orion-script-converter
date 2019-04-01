@@ -1,4 +1,4 @@
-# Orion-Script-Converter Version: 0.0.1
+# Orion-Script-Converter
 
 
 ### A python package to convert python3 project into a NBAI task that can be executed by Nebula AI Worker.
@@ -123,31 +123,31 @@ output response:
 
     You have two ways to convert your Jupyter Notebook '.ipynb' files into a Python3 '.py' file:
     
-    1.
-    In your Jupyter Notebook, open a '.ipynb' file, select File | Download as | Python, 
+    1. In your Jupyter Notebook workspace, open a '.ipynb' file, select File -> Download as | Python, 
     a '.py' with the same file name will create.
     
-    2. 
-    Use the following command
- ```
+    2. Use the following command
+```
     $ cd my_project   
-    my_project$ convert2py <filename1.ipynb, [filename.ipynb ...]>     # for multi-file convertion
+    my_project$ convert2py <filename1.ipynb, [filename.ipynb ...]>     # for multi-file conversion
 ```
 
 ### Help
 - Get help
 
 `$ convert2py -h`
+`$ convert2or -h`
 
 - Get package information
 
-`$ pip3 show convert2or`
+`$ pip3 show convert2orion`
 
 - Remove this package
 
-`$ pip3 uninstall convert2or`
+`$ pip3 uninstall convert2orion`
 
 ### Samples
+
 
 
 
