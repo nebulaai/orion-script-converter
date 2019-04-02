@@ -6,8 +6,9 @@
 This package will warp and convert your AI project into a NBAI task. 
 The sub-folders and files inside your project folder will be assumed 
 as part of your source codes and will be converted to a '.zip' file, excluding:
-   * hidden folders(e.g. '.git' or '.idea' folder) 
+   * hidden folders(e.g. '.git', '.idea' folder) 
    * python '__pycache__' folder
+   * files starting with '.'
    * Jupyter Notebook '.ipynb' files
    
 This package includes two commands:
