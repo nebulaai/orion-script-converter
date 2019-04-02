@@ -15,14 +15,16 @@ def zip_folder(folder_path, output_path):
                              compression=zipfile.ZIP_DEFLATED) as zf:
             base_path = os.path.normpath(base_dir)
             for dirpath, dirnames, filenames in os.walk(base_dir):
-                for name in sorted(dirnames):
-                    path = os.path.normpath(os.path.join(dirpath, name))
-                    if ".ipynb" not in path:
-                        zf.write(path, os.path.relpath(path, base_path))
-                for name in filenames:
-                    path = os.path.normpath(os.path.join(dirpath, name))
+                dirnames[:] = [d for d in dirnames if not d[0] == '.' and "__pycache__" not in dirnames]
+                for dir_name in sorted(dirnames):
+                    path = os.path.normpath(os.path.join(dirpath, dir_name))
+                    zf.write(path, os.path.relpath(path, base_path))
+
+                filenames = [f for f in filenames if not f[0] == '.']
+                for f_name in filenames:
+                    path = os.path.normpath(os.path.join(dirpath, f_name))
                     if os.path.isfile(path):
-                        filename, file_extension = os.path.splitext(name)
+                        filename, file_extension = os.path.splitext(f_name)
                         if str(file_extension) != ".ipynb":
                             zf.write(path, os.path.relpath(path, base_path))
     except Exception as message:
