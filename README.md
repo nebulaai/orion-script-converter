@@ -2,14 +2,20 @@
 
 
 ### A python package to convert python3 project into a NBAI task that can be executed by Nebula AI Worker.
-  
+
+This package will warp and convert your AI project into a NBAI task. 
+The sub-folders and files inside your project folder will be assumed 
+as part of your source codes and will be converted to a '.zip' file, excluding:
+   * hidden folders(e.g. '.git' or '.idea' folder) 
+   * python '__pycache__' folder
+   * Jupyter Notebook '.ipynb' files
+   
 This package includes two commands:
 ```
 - convert2or: Warp and convert python3 project files into a NBAI task that can be uploaded
  directly via NBAI Orion Platform and executed by Nebula AI Worker.
     
 - convert2py: Convert Jupyter Notebook '.ipynb' files into python3 '.py' files.
-
 ```
     
 ### Requirements
@@ -77,7 +83,7 @@ output response:
   **Note:**
 
     - Enter your project
-    - Enter command 'convert2or'
+    - Type command 'convert2or'
     
         Input parameters according to the prompt:
         1. 
