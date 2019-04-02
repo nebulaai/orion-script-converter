@@ -226,7 +226,7 @@ def convert2or():
                 p.wait()
                 time.sleep(1)
 
-                # fix the bug raising from 'tensorflow', 'tensorflow_gpu' and "tensorflow-gpu>1.12.0"
+                # fix the bug raising from 'tensorflow', 'tensorflow_gpu'
                 filename = os.path.join(workspace_dir, "requirements.txt")
 
                 rw_file(filename, matplotlib="matplotlib", tensorflow_gpu="", tensorflow="tensorflow-gpu")
