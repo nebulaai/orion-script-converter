@@ -262,7 +262,7 @@ The response looks like:
     Zipped files successfully!
 ```
 
-The task is named as 'word2vec_basic_orion.zip', also in the "task_files" folder.
+The task is named as 'word2vec_basic_orion.zip', also saved in the "task_files" folder.
     
 ##### Step 2: Upload this task via Orion Platform and have it executed by a Nebula AI Worker
 [Sign in as Nebula AI User](https://nbai.io/dashboard/#/login)
@@ -385,7 +385,7 @@ output is similar to the following:
     Zipped files successfully!
 ```
 
-The task is named as 'main_orion.zip', in the "task_files" folder.
+The task is named as 'main_orion.zip', saved in the "task_files" folder.
     
 ##### Step 2: Upload this task via Orion Platform and have it executed by a Nebula AI Worker
 [Sign in as Nebula AI User](https://nbai.io/dashboard/#/login)
@@ -410,5 +410,5 @@ time="2019-03-29 13:49:55" level=INFO msg="The result of
         Worker (0xE40c23cbEc97Ab0a63378954b827c04841C68370)."
 
 ```
-2. NBAI_output.log: No screen output, empty file.
+2. NBAI_output.log: No screen output, an empty file.
  
