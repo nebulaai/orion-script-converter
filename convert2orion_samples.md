@@ -1,5 +1,5 @@
 
-# Samples of Converting AI Projects to Nenula AI Tasks 
+# Samples of Converting AI Projects to Nebula AI Tasks 
 Created by weigang Li
 
 This tutorial aims to facilitate Nebula AI users to convert their 
