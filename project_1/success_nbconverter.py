@@ -37,7 +37,7 @@ class GUI:
         self.has_data_uri = "no"
 
         self.win.title("NBAI Task Converter")
-        self.win.resizable(0, 0)  # this prevents from resizing the window
+        self.win.resizable(0, 0)
 
         screen_width = self.win.winfo_screenwidth()
         screen_height = self.win.winfo_screenheight()
@@ -59,7 +59,8 @@ class GUI:
     def make_form(self):
         self.has_data_uri = messagebox.askquestion("Data Configuration", "Do you have external data("
                                                                          "data stored outside your project database)"
-                                                   " that needs to be downloaded from a specific uri (y/n)? ")
+                                                                         " that needs to be downloaded from a specific "
+                                                                         "uri (y/n)? ")
         if self.has_data_uri == "yes":
             ttk.Button(self.win, text="Input data URI (starting with\r\n'http://', 'https://' or 'ftp://')", width=30,
                        command=lambda: self.set_path_data_url()).grid(
@@ -116,7 +117,7 @@ class GUI:
     def validate_input(self, event):
         # check project path
         self.path_project_dir = str(self.input_text_project_dir.get())
-        print("path_project_dir: ", self.path_project_dir)
+        display_message(self.scr, "project_dir: {}".format(self.path_project_dir))
         project_path_try = self.check_project_path(self.path_project_dir)
         if project_path_try == -1:
             self.go_exit(event)
@@ -125,7 +126,7 @@ class GUI:
         else:
             # check output path
             self.path_output_dir = str(self.input_text_output_dir.get())
-            print("output_dir: ", self.path_output_dir)
+            display_message(self.scr, "output_dir: {}".format(self.path_output_dir))
             output_path_try = self.check_output_path(self.path_output_dir, self.path_project_dir)
 
             if output_path_try == -1:
@@ -139,10 +140,12 @@ class GUI:
                 # check exec_file
                 self.path_exec_file = str(self.input_text_exec_file.get())
                 if self.path_exec_file.split('.')[-1] == "ipynb":
-                    self.path_exec_file = self.path_exec_file[:-6]+'.py'
-                print("exec_file: ", self.path_exec_file)
+                    self.path_exec_file_py = self.path_exec_file[:-6] + '.py'
+                else:
+                    self.path_exec_file_py = self.path_exec_file
+                display_message(self.scr, "exec_file: {}".format(self.path_exec_file_py))
 
-                exec_file_try = self.check_file_path(self.path_exec_file, self.path_project_dir)
+                exec_file_try = check_file_path(self.path_exec_file, self.path_exec_file_py, self.path_project_dir)
                 if exec_file_try == -1:
                     self.go_exit(event)
                 elif exec_file_try == 0:
@@ -151,7 +154,7 @@ class GUI:
                     if self.has_data_uri == "no":
                         self.project_dir = self.path_project_dir
                         self.output_dir = self.path_output_dir
-                        self.exec_file = self.path_exec_file
+                        self.exec_file = self.path_exec_file_py
                         self.data_url = ""
                         self.data_dir = ""
                         self.validate_success()
@@ -159,7 +162,7 @@ class GUI:
                     else:
                         # check data url
                         self.path_data_url = str(self.input_text_data_url.get())
-                        print("data_url: ", self.path_data_url)
+                        display_message(self.scr, "data_url:{} ".format(self.path_data_url))
                         data_url_try = self.check_data_url(self.path_data_url)
                         if data_url_try == -1:
                             self.go_exit(event)
@@ -168,7 +171,7 @@ class GUI:
                         else:
                             # check data dir
                             self.path_data_dir = str(self.input_text_data_dir.get())
-                            print("data_dir: ", self.path_data_dir)
+                            display_message(self.scr, "data_dir: {}".format(self.path_data_dir))
                             data_path_try = self.check_data_path(self.path_data_dir, self.path_project_dir)
 
                             if data_path_try == -1:
@@ -251,12 +254,12 @@ class GUI:
         data_url = self.data_url
         data_dir = self.data_dir
 
-        print("final project:", project_dir)
-        print("final file:", exec_file)
-        print("final output:", output_dir)
-        print("final data url:", data_url)
-        print("final data dir:", data_dir)
-
+        # display_message(self.scr, "final project: {}".format(project_dir))
+        # display_message(self.scr, "final file: {}".format(exec_file))
+        # display_message(self.scr, "final output: {}".format(output_dir))
+        # display_message(self.scr, "final data url: {}".format(data_url))
+        # display_message(self.scr, "final data dir: {}".format(data_dir)
+        #                 )
         self.submitButton.unbind("<Button-1>")
         self.quitButton.unbind("<Button-1>")
 
@@ -277,8 +280,7 @@ class GUI:
         close_button = Button(window, text="Close", font=("Arial Black", 12), command=leave)
         close_button.place(x=400, y=680, width=120, height=40)
 
-    @staticmethod
-    def check_project_path(dirname):
+    def check_project_path(self, dirname):
         dir_path = dirname
         if not os.path.isdir(dir_path):
             if not messagebox.askretrycancel("Project directory", "Project directory does not exist!"):
@@ -286,7 +288,7 @@ class GUI:
             else:
                 return 0
         else:
-            convert2py(dir_path)
+            convert2py(dir_path, self.scr)
             return 1
 
     @staticmethod
@@ -315,25 +317,29 @@ class GUI:
             else:
                 return -1
 
-    @staticmethod
-    def check_file_path(exe_file_path, workspace_dir):
-        file_path = exe_file_path
-        if not os.path.isabs(file_path):
-            file_path = os.path.join(os.path.abspath(os.curdir), file_path)
-        if os.path.isfile(file_path) and (file_path[-3:] in ".py"):
-            if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
-                return 1
-            else:
-                if messagebox.askretrycancel("Entry-point File",
-                                             "Entry-point file is NOT inside your project"):
-                    return 0
-                else:
-                    return -1
+
+def check_file_path(exe_file_path, path_exec_file_py, workspace_dir):
+    file_path = path_exec_file_py
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(os.path.abspath(os.curdir), file_path)
+
+    if (os.path.isfile(file_path) or os.path.isfile(exe_file_path)) and (
+            file_path[-3:] == ".py" or file_path[-6:] == ".ipynb"):
+
+        if file_path.startswith(os.path.abspath(workspace_dir) + os.sep):
+            return 1
         else:
-            if messagebox.askretrycancel("Entry-point File", "Entry-point file is NOT a python file"):
+            if messagebox.askretrycancel("Entry-point File",
+                                         "Entry-point file is outside project directory"):
                 return 0
             else:
                 return -1
+    else:
+        if messagebox.askretrycancel("Entry-point File",
+                                     "Entry-point file is Neither a python file Nor an Ipython file"):
+            return 0
+        else:
+            return -1
 
 
 def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, scr):
@@ -344,7 +350,7 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
     try:
         entry_filename = os.path.splitext(os.path.basename(exec_file_name))[0]
     except Exception as e:
-        # print('Invalid arguments, {}'.format(e))
+        # display_message('Invalid arguments, {}'.format(e))
         err = 'Invalid arguments, {}'.format(e)
         display_error(scr, err)
         sys.exit(1)
@@ -373,7 +379,7 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
 
                 rw_file(filename, matplotlib="matplotlib", tensorflow_gpu="", tensorflow="tensorflow-gpu")
                 remove_empty_lines(filename)
-                # print("Generated 'requirements.txt' successfully!")
+                # display_message("Generated 'requirements.txt' successfully!")
                 txt = "Generated 'requirements.txt' successfully!"
                 display_message(scr, txt)
 
@@ -395,15 +401,14 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
                                               })
                     with open(os.path.join(workspace_dir, "params.json"), 'w+') as f:
                         f.write(params_json)
-                    # print("Generated 'params.json' successfully!")
                     txt = "Generated 'params.json' successfully!"
                     display_message(scr, txt)
 
                 except Exception as e:
                     err = "Generating 'params.json' failed: {}".format(e)
                     display_error(scr, err)
-                    sys.exit(1)
-                    # raise IOError("Generating 'params.json' failed: {}".format(e))
+                    # sys.exit(1)
+                    raise IOError("Generating 'params.json' failed: {}".format(e))
 
                 else:
                     time.sleep(2)
@@ -414,20 +419,19 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
                             os.makedirs(zip_folder_path)
 
                         output_filename = str(entry_filename) + "_orion.zip"
-                        zip_folder(workspace_dir, os.path.join(zip_folder_path, output_filename))
-                        # print('Zipped files successfully!')
+                        zip_folder(workspace_dir, os.path.join(zip_folder_path, output_filename), scr)
                         txt = "Zipped files successfully!"
                         display_message(scr, txt)
 
                         display_message(scr, "Task has been converted successfully!")
-                        display_message(scr, "This task is save at: {}".format(
+                        display_message(scr, "This task is saved at: {}".format(
                             os.path.normpath(os.path.join(zip_folder_path, output_filename))))
 
                     except Exception as e:
                         err = "Zipping files failed: {}".format(e)
                         display_error(scr, err)
-                        sys.exit(1)
-                        # raise RuntimeError('Zipping files failed: {}'.format(e))
+                        # sys.exit(1)
+                        raise RuntimeError('Zipping files failed: {}'.format(e))
                     else:
                         try:
                             os.remove(os.path.join(workspace_dir, "params.json"))
@@ -435,8 +439,8 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
                         except Exception as e:
                             err = 'Removing files failed: {}'.format(e)
                             display_error(scr, err)
-                            sys.exit(1)
-                            # raise RuntimeError('Removing files failed: {}'.format(e))
+                            # sys.exit(1)
+                            raise RuntimeError('Removing files failed: {}'.format(e))
 
 
 def display_message(scr, txt):
@@ -458,38 +462,40 @@ def get_files(folder, ext='.ipynb'):
     for root_dir, dirs, files in os.walk(folder):
         for f in files:
             if f.endswith(ext):
-                print(os.path.join(root_dir, f))
                 file_list.append(os.path.join(root_dir, f))
     return file_list
 
 
-def convert2py(folder):
+def convert2py(folder, scr):
     """
     Convert Jupyter Notebook '.ipynb' files to python3 '.py' files.
     """
 
     # parse converter arguments
     files = get_files(os.path.abspath(folder))
-    print(files)
     try:
-        p = subprocess.Popen(["pip3", "install", "nbconvert"])
-        p.wait()
+        s = subprocess.Popen(["pip3", "install", "nbconvert"])
+        s.wait()
         time.sleep(1)
         import nbconvert
     except ImportError as e:
-        raise RuntimeError('nbconvert installation failed: {}'.format(e))
+        err = 'nbconvert installation failed: {}'.format(e)
+        display_error(scr, err)
+        raise RuntimeError(err)
     try:
         p = list()
-        for i in range(len(files) - 1):
+        for i in range(len(sys.argv) - 1):
             p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", files[i]]))
             p[i].wait()
-        print('Converted files successfully!')
+        display_message(scr, 'Converted files successfully!')
 
     except Exception as e:
-        raise RuntimeError("Converting files failed: {}".format(e))
+        err_message = "Converting files failed: {}".format(e)
+        display_error(scr, err_message)
+        raise RuntimeError(err_message)
 
 
-def zip_folder(folder_path, output_path):
+def zip_folder(folder_path, output_path, scr):
     base_dir = os.path.abspath(folder_path)
     try:
         with zipfile.ZipFile(output_path, "w",
@@ -511,7 +517,7 @@ def zip_folder(folder_path, output_path):
                         if str(file_extension) != ".ipynb":
                             zf.write(path, os.path.relpath(path, base_path))
     except Exception as message:
-        print(message)
+        display_error(scr, message)
         sys.exit(1)
     finally:
         zf.close()
