@@ -484,8 +484,8 @@ def convert2py(folder, scr):
         raise RuntimeError(err)
     try:
         p = list()
-        for i in range(len(sys.argv) - 1):
-            p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", files[i]]))
+        for i, file in enumerate(files):
+            p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", file]))
             p[i].wait()
         display_message(scr, 'Converted files successfully!')
 
