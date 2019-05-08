@@ -22,12 +22,13 @@ This package includes two commands:
 ### Requirements
 - IPython 7.3.0 
 - Python 3.5.2
-
+- git
   (tested versions)
 
 ### Installation
 
-```
+``` $ sudo apt install git-all    
+
     $ pip3 install git+https://github.com/nebulaai/orion-script-converter.git  
     or
     $ pip install git+https://github.com/nebulaai/orion-script-converter.git  
