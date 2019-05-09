@@ -107,3 +107,16 @@ venv.bak/
 
 .idea
 NBAI_task_files
+/NBAIConverter/t2.py
+/NBAIConverter/t3.py
+/NBAIConverter/t4.py
+/NBAIConverter/new.py
+/NBAIConverter/keyconverter.py
+jupyterconverter.iml
+NBAIConverter/__init__.py
+NBAIConverter/data/
+NBAIConverter/keyconverter.py
+NBAIConverter/new.py
+NBAIConverter/output/
+/NBAIConverter/NBAIlog/__init__.py
+NBAIConverter/example.ipynb

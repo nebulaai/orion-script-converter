@@ -8,6 +8,7 @@ import subprocess
 
 from tkinter import ttk, StringVar, messagebox, Tk, scrolledtext, Button, END
 from tkinter.filedialog import askopenfilename, askdirectory
+from NBAIConverter.NBAIlog import setuplog
 
 
 class GUI:
@@ -192,7 +193,7 @@ class GUI:
         ttk.Entry(self.win, textvariable=self.success, width=500).grid(
             row=6, column=1, ipadx=5, ipady=5, padx=5, pady=5)
         self.quitButton.grid(row=7, ipadx=5, ipady=5, padx=5, pady=5)
-        self.quitButton.bind('<Button-1>', self.go_convert)
+        self.quitButton.bind('<Button-1>', self.validate_convert)
 
     @staticmethod
     def check_data_path(dirname, workspace_dir=''):
@@ -241,7 +242,7 @@ class GUI:
         self.submitButton.unbind("<Button-1>")
         sys.exit(0)
 
-    def go_convert(self, e):
+    def validate_convert(self, e):
         global project_dir
         global exec_file
         global output_dir
@@ -254,19 +255,10 @@ class GUI:
         data_url = self.data_url
         data_dir = self.data_dir
 
-        # display_message(self.scr, "final project: {}".format(project_dir))
-        # display_message(self.scr, "final file: {}".format(exec_file))
-        # display_message(self.scr, "final output: {}".format(output_dir))
-        # display_message(self.scr, "final data url: {}".format(data_url))
-        # display_message(self.scr, "final data dir: {}".format(data_dir)
-        #                 )
         self.submitButton.unbind("<Button-1>")
         self.quitButton.unbind("<Button-1>")
 
         self.do_convert()
-        # self.win.destroy()
-        # root.destroy()
-        # w.deiconify()
 
     def do_convert(self):
 
@@ -277,19 +269,28 @@ class GUI:
         def leave():
             window.destroy()
 
-        close_button = Button(window, text="Close", font=("Arial Black", 12), command=leave)
+        close_button = Button(window, text="Close", font=("Arial Black", 10), command=leave)
         close_button.place(x=400, y=680, width=120, height=40)
 
     def check_project_path(self, dirname):
         dir_path = dirname
-        if not os.path.isdir(dir_path):
-            if not messagebox.askretrycancel("Project directory", "Project directory does not exist!"):
+        if not os.path.isdir(dir_path) or os.path.realpath(dir_path) == "/":
+            if not messagebox.askretrycancel("Project directory",
+                                             "Project directory does not exist or it is the root!"):
                 return -1
             else:
                 return 0
         else:
-            convert2py(dir_path, self.scr)
-            return 1
+            try:
+                convert2py(dir_path, self.scr)
+                return 1
+            except Exception as e:
+                err = 'Validation failed: {}, please refer to {}'.format(e, log_path)
+                logger.error(err)
+
+
+
+
 
     @staticmethod
     def check_output_path(dirname, workspace_dir=''):
@@ -350,11 +351,10 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
     try:
         entry_filename = os.path.splitext(os.path.basename(exec_file_name))[0]
     except Exception as e:
-        # display_message('Invalid arguments, {}'.format(e))
         err = 'Invalid arguments, {}'.format(e)
+        logger.error(err)
         display_error(scr, err)
-        sys.exit(1)
-
+        raise RuntimeError(err)
     else:
         # Generate requirements.txt
         try:
@@ -364,9 +364,10 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
             import pipreqs
         except ImportError as e:
             err = 'pipreqs installation failed: {}'.format(e)
+            logger.error(err)
             display_error(scr, err)
-            # raise RuntimeError('pipreqs installation failed: {}'.format(e))
-            sys.exit(1)
+            raise RuntimeError(err)
+            # sys.exit(1)
         else:
             time.sleep(1)
             try:
@@ -379,15 +380,16 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
 
                 rw_file(filename, matplotlib="matplotlib", tensorflow_gpu="", tensorflow="tensorflow-gpu")
                 remove_empty_lines(filename)
-                # display_message("Generated 'requirements.txt' successfully!")
                 txt = "Generated 'requirements.txt' successfully!"
+                logger.info(txt)
                 display_message(scr, txt)
 
             except Exception as e:
                 err = "Generating 'requirements.txt' failed: {}".format(e)
+                logger.error(err)
                 display_error(scr, err)
-                sys.exit(1)
-                # raise RuntimeError("Generating 'requirements.txt' failed: {}".format(e))
+                raise RuntimeError(err)
+                # sys.exit(1)
             else:
                 # Generate params.json
                 try:
@@ -402,13 +404,15 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
                     with open(os.path.join(workspace_dir, "params.json"), 'w+') as f:
                         f.write(params_json)
                     txt = "Generated 'params.json' successfully!"
+                    logger.info(txt)
                     display_message(scr, txt)
 
                 except Exception as e:
                     err = "Generating 'params.json' failed: {}".format(e)
+                    logger.error(err)
                     display_error(scr, err)
                     # sys.exit(1)
-                    raise IOError("Generating 'params.json' failed: {}".format(e))
+                    raise IOError(err)
 
                 else:
                     time.sleep(2)
@@ -421,29 +425,36 @@ def convert2or(workspace_dir, output_path, exec_file_name, data_uri, data_path, 
                         output_filename = str(entry_filename) + "_orion.zip"
                         zip_folder(workspace_dir, os.path.join(zip_folder_path, output_filename), scr)
                         txt = "Zipped files successfully!"
+                        logger.info(txt)
                         display_message(scr, txt)
-
-                        display_message(scr, "Task has been converted successfully!")
-                        display_message(scr, "This task is saved at: {}".format(
-                            os.path.normpath(os.path.join(zip_folder_path, output_filename))))
+                        txt = "Task has been converted successfully!"
+                        display_message(scr, txt)
+                        logger.info(txt)
+                        txt = "This task is saved at: {}".format(
+                            os.path.normpath(os.path.join(zip_folder_path, output_filename)))
+                        logger.info(txt)
+                        display_message(scr, txt)
 
                     except Exception as e:
                         err = "Zipping files failed: {}".format(e)
+                        logger.error(err)
                         display_error(scr, err)
                         # sys.exit(1)
-                        raise RuntimeError('Zipping files failed: {}'.format(e))
+                        raise RuntimeError(err)
                     else:
                         try:
                             os.remove(os.path.join(workspace_dir, "params.json"))
                             os.remove(os.path.join(workspace_dir, "requirements.txt"))
                         except Exception as e:
                             err = 'Removing files failed: {}'.format(e)
+                            logger.error(err)
                             display_error(scr, err)
                             # sys.exit(1)
-                            raise RuntimeError('Removing files failed: {}'.format(e))
+                            raise RuntimeError(err)
 
 
 def display_message(scr, txt):
+    global logger
     scr.insert(END, '{} \n'.format(txt), "msg")
     scr.tag_config('msg', foreground='green')
     scr.see(END)
@@ -451,6 +462,7 @@ def display_message(scr, txt):
 
 
 def display_error(scr, err):
+    global logger
     scr.insert(END, '{} \n'.format(err), "err")
     scr.tag_config('err', foreground='red')
     scr.see(END)
@@ -478,21 +490,27 @@ def convert2py(folder, scr):
         s.wait()
         time.sleep(1)
         import nbconvert
-    except ImportError as e:
+    except Exception as e:
         err = 'nbconvert installation failed: {}'.format(e)
+        logger.error(err)
         display_error(scr, err)
-        raise RuntimeError(err)
+        raise
+        # raise RuntimeError(err)
     try:
         p = list()
         for i, file in enumerate(files):
             p.append(subprocess.Popen(["jupyter", "nbconvert", "--to", "python", file]))
             p[i].wait()
-        display_message(scr, 'Converted files successfully!')
+        txt = 'Converted files successfully!'
+        logger.info(txt)
+        display_message(scr, txt)
 
     except Exception as e:
         err_message = "Converting files failed: {}".format(e)
+        logger.error(err_message)
         display_error(scr, err_message)
-        raise RuntimeError(err_message)
+        raise
+        # raise RuntimeError(err_message)
 
 
 def zip_folder(folder_path, output_path, scr):
@@ -516,9 +534,12 @@ def zip_folder(folder_path, output_path, scr):
                         filename, file_extension = os.path.splitext(f_name)
                         if str(file_extension) != ".ipynb":
                             zf.write(path, os.path.relpath(path, base_path))
-    except Exception as message:
+    except Exception as e:
+        message = "Zipping project folder failed: {}".format(e)
+        logger.error(message)
         display_error(scr, message)
-        sys.exit(1)
+        raise RuntimeError(message)
+        # sys.exit(1)
     finally:
         zf.close()
 
@@ -543,12 +564,19 @@ def rw_file(filename, **kwargs):
             fp.writelines(lines)
 
 
+def log_script(message):
+    logger.info(message)
+
+
 if __name__ == '__main__':
     project_dir = ""
     exec_file = ""
     output_dir = ""
     data_url = ""
     data_dir = ""
+
+    log_path = os.path.join(os.path.dirname("__FILE__"), "NBAIlog/NBAIConverter.log")
+    logger = setuplog.setup_logger("NBAIlog", log_path)
 
     window = Tk()
     gui = GUI(window)
